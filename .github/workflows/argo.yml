@@ -1,0 +1,22 @@
+name: argo-test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  argo-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Lint ArgoCD manifests
+        id: argo
+        run: |
+          dirs=$(find . -type d -exec test -f "{}/helm/values.yaml" \; -print)
+          for dir in $dirs; do
+          find "$dir/argo/" -type f \( -name '*.yaml' -o -name '*.yml' \) -exec yamllint {} \;
+          done
+#          echo $dirs > /tmp/dirs
