@@ -1,0 +1,21 @@
+server:
+  persistentVolume:
+    enabled: true
+    size: 5Gi
+  retention: "7d"
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    path: /
+    hosts:
+      - prometheus.corp.local
+    annotations:
+      cert-manager.io/cluster-issuer: lab-ca-issuer
+    pathType: Prefix
+    tls:
+    - hosts:
+      - prometheus.corp.local
+      secretName: prometheus-tls-secret
+alertmanager:
+  persistence:
+    size: 1Gi 

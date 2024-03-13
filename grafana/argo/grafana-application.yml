@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+  labels:
+    app: grafana
+spec:
+  project: prod
+  source:
+    repoURL: 'http://gitea-prod-http.prod.svc.cluster.local:3000/corp/infra-repo.git'
+    path: charts/grafana
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+        - ci/prod-values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff: 
+        duration: 5s
+        factor: 2
